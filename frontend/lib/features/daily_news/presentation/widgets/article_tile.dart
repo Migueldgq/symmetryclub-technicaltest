@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../domain/entities/article.dart';
 
 class ArticleWidget extends StatelessWidget {
@@ -122,7 +123,7 @@ class ArticleWidget extends StatelessWidget {
                 const Icon(Icons.timeline_outlined, size: 16),
                 const SizedBox(width: 4),
                 Text(
-                  article!.publishedAt!,
+                  _formatDate(article!.publishedAt),
                   style: const TextStyle(
                     fontSize: 12,
                   ),
@@ -137,15 +138,22 @@ class ArticleWidget extends StatelessWidget {
 
   Widget _buildRemovableArea() {
     if (isRemovable!) {
-      return GestureDetector(
-        onTap: _onRemove,
-        child: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8),
-          child: Icon(Icons.remove_circle_outline, color: Colors.red),
-        ),
+      return IconButton(
+        onPressed: _onRemove,
+        icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
       );
     }
     return Container();
+  }
+
+  String _formatDate(String? dateStr) {
+    if (dateStr == null) return '';
+    try {
+      final date = DateTime.parse(dateStr);
+      return DateFormat('MMM d, yyyy • h:mm a').format(date);
+    } catch (_) {
+      return dateStr;
+    }
   }
 
   void _onTap() {

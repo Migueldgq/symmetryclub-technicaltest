@@ -16,13 +16,12 @@ class RemoteArticlesBloc extends Bloc<RemoteArticlesEvent,RemoteArticlesState> {
   void onGetArticles(GetArticles event, Emitter < RemoteArticlesState > emit) async {
     final dataState = await _getArticleUseCase();
 
-    if (dataState is DataSuccess && dataState.data!.isNotEmpty) {
+    if (dataState is DataSuccess) {
       emit(
-        RemoteArticlesDone(dataState.data!)
+        RemoteArticlesDone(dataState.data ?? [])
       );
-    }
-    
-    if (dataState is DataFailed) {
+    } else if (dataState is DataFailed) {
+      print('Error fetching articles: ${dataState.error}');
       emit(
         RemoteArticlesError(dataState.error!)
       );

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_bloc.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_event.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_state.dart';
 
 import '../../../domain/entities/article.dart';
@@ -56,6 +57,38 @@ class DailyNews extends StatelessWidget {
 
   Widget _buildArticlesPage(
       BuildContext context, List<ArticleEntity> articles) {
+    if (articles.isEmpty) {
+      return Scaffold(
+        appBar: _buildAppbar(context),
+        body: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.article_outlined, size: 64, color: Colors.grey),
+              SizedBox(height: 16),
+              Text(
+                'No articles yet',
+                style: TextStyle(fontSize: 18, color: Colors.grey),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Publish your first article with the + button',
+                style: TextStyle(fontSize: 14, color: Colors.grey),
+              ),
+            ],
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.pushNamed(context, '/PublishArticle').then((_) {
+              context.read<RemoteArticlesBloc>().add(const GetArticles());
+            });
+          },
+          child: const Icon(Icons.add),
+        ),
+      );
+    }
+
     List<Widget> articleWidgets = [];
     for (var article in articles) {
       articleWidgets.add(ArticleWidget(
@@ -71,7 +104,9 @@ class DailyNews extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: REPLACE ROUTE WITH YOUR "ADD ARTICLE" PAGE
+          Navigator.pushNamed(context, '/PublishArticle').then((_) {
+            context.read<RemoteArticlesBloc>().add(const GetArticles());
+          });
         },
         child: const Icon(Icons.add),
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import '../../../../../injection_container.dart';
 import '../../../domain/entities/article.dart';
@@ -70,7 +71,7 @@ class ArticleDetailsView extends HookWidget {
               const Icon(Ionicons.time_outline, size: 16),
               const SizedBox(width: 4),
               Text(
-                article!.publishedAt!,
+                _formatDate(article!.publishedAt),
                 style: const TextStyle(fontSize: 12),
               ),
             ],
@@ -106,6 +107,16 @@ class ArticleDetailsView extends HookWidget {
         child: const Icon(Ionicons.bookmark, color: Colors.white),
       ),
     );
+  }
+
+  String _formatDate(String? dateStr) {
+    if (dateStr == null) return '';
+    try {
+      final date = DateTime.parse(dateStr);
+      return DateFormat('MMM d, yyyy • h:mm a').format(date);
+    } catch (_) {
+      return dateStr;
+    }
   }
 
   void _onBackButtonTapped(BuildContext context) {
