@@ -2,6 +2,30 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TODO: WRITE ANY NECESSARY FIRESTORE RULES HERE
+    
+    // Rules for the "articles" collection
+    match /articles/{articleId} {
+      // Allow read access to any user (public)
+      allow read: if true;
+      
+      // Allow create and update as long as it complies with the required schema
+      allow create, update: if isValidArticle();
+      
+      // Allow delete temporarily (open to journalists in this test)
+      allow delete: if true;
+    }
+    
+    // Function to validate that the submitted data complies with the Article schema
+    function isValidArticle() {
+      let data = request.resource.data;
+      
+      return data.keys().hasAll(['author', 'title', 'description', 'urlToImage', 'publishedAt', 'content']) &&
+             data.author is string && data.author.size() > 0 &&
+             data.title is string && data.title.size() > 0 &&
+             data.description is string &&
+             data.urlToImage is string &&
+             data.publishedAt is timestamp &&
+             data.content is string && data.content.size() > 0;
+    }
   }
 }
